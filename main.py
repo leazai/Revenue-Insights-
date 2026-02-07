@@ -483,14 +483,15 @@ def send_to_lovable(parsed_data: Dict, batch_id: str) -> bool:
         logger.error("❌ Lovable webhook URL or token not configured")
         return False
     
+    # Flatten metadata fields to root level for Lovable edge function
+    metadata = parsed_data['metadata']
     payload = {
-        'source': 'appfolio',
-        'data_type': 'income_statement',
-        'report_type': '12_month',
         'batch_id': batch_id,
-        'timestamp': datetime.now().isoformat(),
-        'record_count': len(parsed_data['categories']) + len(parsed_data['monthly_data']),
-        'metadata': parsed_data['metadata'],
+        'report_period': metadata.get('report_period'),
+        'period_start': metadata.get('period_start'),
+        'period_end': metadata.get('period_end'),
+        'total_categories': metadata.get('total_categories'),
+        'total_data_points': metadata.get('total_data_points'),
         'categories': parsed_data['categories'],
         'monthly_data': parsed_data['monthly_data'],
         'totals': parsed_data['totals']
